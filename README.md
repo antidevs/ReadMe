@@ -48,7 +48,7 @@ firese = Instance.new('RemoteEvent').FireServer
 local Special = false  
 local Special2 = false  
 local Mods  
-
+```lua
 Mods = hookmetamethod(game, "__namecall", newcclosure(function(...)  
     local Method = getnamecallmethod()  
     local args = {...}  
@@ -67,6 +67,6 @@ Mods = hookmetamethod(game, "__namecall", newcclosure(function(...)
 
     return Mods(...)  
 end))  
-
+```
 📌 **This patch blocks exploiters from mass-destroying structures** using `FireServer` abuse.  
 ✅ **Implemented & tested in live environments**.  
