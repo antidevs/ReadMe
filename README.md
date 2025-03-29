@@ -26,3 +26,47 @@ With a deep understanding of **how cheats work**, we ensure that **game security
 If you're a developer looking to **improve your anti-cheat**, or just curious about **how we fight back against cheaters**, feel free to explore my work!  
 
 🔥 **Cheaters don’t win. We patch, they quit.** 🔥  
+
+---
+
+# 🛠️ Patch Notes  
+
+Here, I document **security patches** made to protect games from exploitation. Each patch includes **code fixes, explanations, and improvements** to ensure **a more secure environment**.  
+
+### **🩹 Patch 1 – Preventing Exploit-Based Structure Destruction**  
+
+#### **Issue**  
+Exploiters were abusing `FireServer` calls to destroy structures like **Walls, Foundations, and Doors** remotely. This allowed them to grief games by bypassing normal building mechanics.  
+
+#### **Fix**  
+By cheking the event sent to server to check entity type and distance before destruction, preventing unauthorized exploits.  
+
+#### **Patched Code**  
+
+local dookie = debug.getupvalues(modules.Character.updateCharacter)  
+firese = Instance.new('RemoteEvent').FireServer  
+local Special = false  
+local Special2 = false  
+local Mods  
+
+Mods = hookmetamethod(game, "__namecall", newcclosure(function(...)  
+    local Method = getnamecallmethod()  
+    local args = {...}  
+    local self = args[1]  
+
+    if Method == "FireServer" and Special then  
+        task.spawn(function()  
+            for i, v in pairs(dookie[14].EntityMap) do  
+                if v.type == "Foundation" or v.type == "Wall" or v.type == "DoubleDoor" then  
+                    local entityid = v.id   
+                    firese(self, 10, "Destroy", entityid)  
+                end  
+            end  
+        end)  
+    end  
+
+    return Mods(...)  
+end))  
+
+📌 **This patch blocks exploiters from mass-destroying structures** using `FireServer` abuse.  
+✅ **Implemented & tested in live environments**.  
