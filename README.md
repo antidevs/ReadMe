@@ -44,20 +44,16 @@ By cheking the event sent to server to check entity type and distance before des
 #### **Patched Code**  
 
 ```lua
-local dookie = debug.getupvalues(modules.Character.updateCharacter)  
 firese = Instance.new('RemoteEvent').FireServer  
+local EntityList = debug.getupvalues(modules.Character.updateCharacter)  
 local Special = false  
-local Special2 = false  
-local Mods  
-
-Mods = hookmetamethod(game, "__namecall", newcclosure(function(...)  
+local __Destroy; __Destroy = hookmetamethod(game, "__namecall", newcclosure(function(...)  
     local Method = getnamecallmethod()  
     local args = {...}  
     local self = args[1]  
-
     if Method == "FireServer" and Special then  
         task.spawn(function()  
-            for i, v in pairs(dookie[14].EntityMap) do  
+            for i, v in pairs(EntityList[14].EntityMap) do  
                 if v.type == "Foundation" or v.type == "Wall" or v.type == "DoubleDoor" then  
                     local entityid = v.id   
                     firese(self, 10, "Destroy", entityid)  
@@ -66,7 +62,7 @@ Mods = hookmetamethod(game, "__namecall", newcclosure(function(...)
         end)  
     end  
 
-    return Mods(...)  
+    return __Destroy(...)  
 end))  
 ```
 📌 **This patch blocks exploiters from mass-destroying structures** using `FireServer` abuse.  
