@@ -43,12 +43,13 @@ By cheking the event sent to server to check entity type and distance before des
 
 #### **Patched Code**  
 
+```lua
 local dookie = debug.getupvalues(modules.Character.updateCharacter)  
 firese = Instance.new('RemoteEvent').FireServer  
 local Special = false  
 local Special2 = false  
 local Mods  
-```lua
+
 Mods = hookmetamethod(game, "__namecall", newcclosure(function(...)  
     local Method = getnamecallmethod()  
     local args = {...}  
