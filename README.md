@@ -31,7 +31,7 @@ If you're a developer looking to **improve your anti-cheat**, or just curious ab
 
 # 🛠️ Patch Notes  
 
-Here, I document **security patches** made to protect games from exploitation. Each patch includes **code fixes, explanations, and improvements** to ensure **a more secure environment**.  
+Here, I document **security patches** made to protect games from exploitation. Each patch includes **The Exploit code, explanations, and improvements** to ensure **a more secure environment**.  
 
 ### **🩹 Patch 1 – Preventing Exploit-Based Structure Destruction**  
 
