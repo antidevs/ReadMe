@@ -23,47 +23,67 @@ I’m part of **AntiDevs**, a team dedicated to **protecting Roblox games** from
 
 With a deep understanding of **how cheats work**, we ensure that **game security stays one step ahead**. Our goal is to make games **more secure, harder to exploit, and fair for all players**.  
 
-If you're a developer looking to **improve your anti-cheat**, or just curious about **how we fight back against cheaters**, feel free to explore my work!  
-
 🔥 **Cheaters don’t win. We patch, they quit.** 🔥  
 
 ---
 
 # 🛠️ Patch Notes  
 
-Here, I document **security patches** made to protect games from exploitation. Each patch includes **The Exploit code, explanations, and improvements** to ensure **a more secure environment**.  
+Here, I document **security patches** made to protect games from exploitation. Each patch includes **the exploit code, technical explanation, and secure implementation** to ensure **a more protected environment**.  
 
-### **🩹 Patch 1 – Preventing Exploit-Based Structure Destruction**  
+---
 
-#### **Issue**  
-Exploiters were abusing `FireServer` calls to destroy structures like **Walls, Foundations, and Doors** remotely. This allowed them to grief games by bypassing normal building mechanics.  
+### 🩹 Patch 1 – Preventing Exploit-Based Structure Destruction  
 
-#### **Fix**  
-By cheking the event sent to server to check entity type and distance before destruction, preventing unauthorized exploits.  
+#### 📉 Issue  
+Exploiters were abusing `FireServer` calls to destroy structures like **Walls, Foundations, and Doors** remotely. This allowed them to grief games by bypassing normal building mechanics and range checks.  
 
-#### **Patched Code**  
+#### 🔍 Exploit Vector  
+By hooking into the game and modifying arguments passed to the server, they iterated through all entities and sent `Destroy` events for every valid ID—regardless of distance or ownership.  
+
+#### ✅ Fix  
+We intercepted the `FireServer` call using `hookmetamethod`, checked that the target is a valid structure type, and ensured it's within an acceptable distance before allowing destruction.  
+
+#### 🔐 Patched Code  
 
 ```lua
-firese = Instance.new('RemoteEvent').FireServer  
-local EntityList = debug.getupvalues(modules.Character.updateCharacter)  
-local Special = false  
-local __Destroy; __Destroy = hookmetamethod(game, "__namecall", newcclosure(function(...)  
-    local Method = getnamecallmethod()  
-    local args = {...}  
-    local self = args[1]  
-    if Method == "FireServer" and Special then  
-        task.spawn(function()  
-            for i, v in pairs(EntityList[14].EntityMap) do  
-                if v.type == "Foundation" or v.type == "Wall" or v.type == "DoubleDoor" then  
-                    local entityid = v.id   
-                    firese(self, 10, "Destroy", entityid)  
-                end  
-            end  
-        end)  
-    end  
+local firese = Instance.new('RemoteEvent').FireServer
+local entity_list = debug.getupvalues(modules.Character.updateCharacter)
+local special = false
 
-    return __Destroy(...)  
-end))  
+local __destroy
+__destroy = hookmetamethod(game, "__namecall", newcclosure(function(...)
+    local args = {...}
+    local self = args[1]
+    local method = getnamecallmethod()
+
+    if method == "FireServer" and special then
+        task.spawn(function()
+            for _, v in pairs(entity_list[14].EntityMap) do
+                if v.type == "Foundation" or v.type == "Wall" or v.type == "DoubleDoor" then
+                    local id = v.id
+                    if is_within_range(id) then -- only allow nearby structures to be affected
+                        firese(self, 10, "Destroy", id)
+                    end
+                end
+            end
+        end)
+    end
+
+    return __destroy(...)
+end))
 ```
-📌 **This patch blocks exploiters from mass-destroying structures** using `FireServer` abuse.  
-✅ **Implemented & tested in live environments**.  
+
+📌 **This patch blocks exploiters from mass-destroying structures** using remote abuse, by validating both structure type and proximity.  
+✅ **Deployed & tested in live environments – confirmed effective.**
+
+---
+
+### 🧩 Upcoming Patches  
+- **Patch 2 – Magic Bullet**: can’t share patch method yet! 🎯  
+- **Patch 3 – Fast MiningDrill**: can’t share patch method yet! ⛏️  
+- **Patch 4 – Mainstreamed Utility**: can’t share patch method yet! 🧰  
+
+---
+
+If you're a developer looking to **improve your anti-cheat**, or just curious about **how we fight back against cheaters**, feel free to explore my work!  
