@@ -47,30 +47,24 @@ We intercepted the `FireServer` call using `hookmetamethod`, checked that the ta
 #### 🔐 Patched Code  
 
 ```lua
-local firese = Instance.new('RemoteEvent').FireServer
-local entity_list = debug.getupvalues(modules.Character.updateCharacter)
-local special = false
-
-local __destroy
-__destroy = hookmetamethod(game, "__namecall", newcclosure(function(...)
-    local args = {...}
-    local self = args[1]
-    local method = getnamecallmethod()
-
-    if method == "FireServer" and special then
-        task.spawn(function()
-            for _, v in pairs(entity_list[14].EntityMap) do
-                if v.type == "Foundation" or v.type == "Wall" or v.type == "DoubleDoor" then
-                    local id = v.id
-                    if is_within_range(id) then -- only allow nearby structures to be affected
-                        firese(self, 10, "Destroy", id)
-                    end
-                end
-            end
-        end)
+firese = Instance.new('RemoteEvent').FireServer  
+local EntityList = debug.getupvalues(modules.Character.updateCharacter)  
+local Special = false  
+local __Destroy; __Destroy = hookmetamethod(game, "__namecall", newcclosure(function(...)  
+    local Method = getnamecallmethod()  
+    local args = {...}  
+    local self = args[1]  
+    if Method == "FireServer" and Special then  
+        task.spawn(function()  
+            for i, v in pairs(EntityList[14].EntityMap) do  
+                if v.type == "Foundation" or v.type == "Wall" or v.type == "DoubleDoor" then  
+                    local entityid = v.id   
+                    firese(self, 10, "Destroy", entityid)  
+                end  
+            end  
+        end)  
     end
-
-    return __destroy(...)
+    return __Destroy(...)  
 end))
 ```
 
